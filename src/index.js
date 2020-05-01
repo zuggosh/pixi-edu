@@ -1,10 +1,11 @@
 import { Application, Graphics } from 'pixi.js';
 import sound from 'pixi-sound';
+import Button from './component/button'
 
 const app = new Application({
     backgroundColor: 0x999999,
-    width: 400,
-    height: 400,
+    width: 1200,
+    height: 600,
     autoStart: false
 });
 document.body.appendChild(app.view);
@@ -32,7 +33,9 @@ const playButton = createButton(true)
 const stopButton = createButton(false)
     .drawRect(34, 34, 32, 32);
 
-app.stage.addChild(playButton, stopButton);
+const myBtn = new Button(app);
+myBtn.beginFill(0xff0000)
+app.stage.addChild(playButton, stopButton, myBtn);
 app.render();
 
 app.loader.add('musical', 'musical.mp3').load(function() {
