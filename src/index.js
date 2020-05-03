@@ -11,7 +11,7 @@ const app = new Application({
 document.body.appendChild(app.view);
 
 // переместить лоудер отдельно
-app.loader.baseUrl = '';
+app.loader.baseUrl = 'assets';
 app.loader.add('background', 'space.png');
 
 app.loader.onProgress.add((e)=>{
@@ -26,12 +26,10 @@ app.loader.onComplete.add(e=> {
     background.x = app.view.width / 2;
     background.y = app.view.height / 2;
     background.anchor.set(0.5);
-    app.stage.addChild(background);
+    app.stage.addChild(background, new BtnContainer(app));
     app.render();
 });
 app.loader.load();
-
-app.stage.addChild(new BtnContainer(app));
 
 app.render();
 
