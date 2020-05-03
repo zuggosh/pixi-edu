@@ -1,6 +1,6 @@
-import { Application, Graphics } from 'pixi.js';
+import { Application, Sprite } from 'pixi.js';
 import sound from 'pixi-sound';
-import Button from './component/button'
+import { BtnContainer } from './component/button'
 
 const app = new Application({
     backgroundColor: 0x999999,
@@ -10,46 +10,28 @@ const app = new Application({
 });
 document.body.appendChild(app.view);
 
-function createButton(visible) {
-    const button = new Graphics()
-        .beginFill(0x0, 0.5)
-        .drawRoundedRect(0, 0, 100, 100, 10)
-        .endFill()
-        .beginFill(0xffffff);
+// переместить лоудер отдельно
+app.loader.baseUrl = '';
+app.loader.add('background', 'space.png');
 
-    button.pivot.set(50, 50);
-    button.position.set(app.view.width / 2, app.view.height / 2);
-    button.interactive = true;
-    button.buttonMode = true;
-    button.visible = visible;
-    return button;
-}
+app.loader.onProgress.add((e)=>{
+    // console.log(e.progress);
+});
+app.loader.onError.add(e=>{
+    // console.log('error: '+ e);
+});
 
-const playButton = createButton(true)
-    .moveTo(36, 30)
-    .lineTo(36, 70)
-    .lineTo(70, 50);
+app.loader.onComplete.add(e=> {
+    const background = new Sprite.from(app.loader.resources.background.texture);
+    background.x = app.view.width / 2;
+    background.y = app.view.height / 2;
+    background.anchor.set(0.5);
+    app.stage.addChild(background);
+    app.render();
+});
+app.loader.load();
 
-const stopButton = createButton(false)
-    .drawRect(34, 34, 32, 32);
+app.stage.addChild(new BtnContainer(app));
 
-const myBtn = new Button(app);
-myBtn.beginFill(0xff0000)
-app.stage.addChild(playButton, stopButton, myBtn);
 app.render();
 
-app.loader.add('musical', 'musical.mp3').load(function() {
-    playButton.on('click', function() {
-        sound.play('musical', { loop: true });
-        playButton.visible = false;
-        stopButton.visible = true;
-        app.render();
-    });
-
-    stopButton.on('click', function() {
-        sound.stop('musical');
-        playButton.visible = true;
-        stopButton.visible = false;
-        app.render();
-    });
-});

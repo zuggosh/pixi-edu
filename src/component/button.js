@@ -1,24 +1,53 @@
-import { Application, Graphics } from 'pixi.js';
+import { Graphics, Container, Text } from 'pixi.js';
 
-export default class extends Graphics {
+export class BtnContainer extends Container {
     constructor(app) {
-        super();
-        this.beginFill(0x0000, 0.5);
-        this.drawRoundedRect(0, 0, 100, 100, 10)
-        this.endFill()
-        // this.beginFill(0xff0000);
+        super(app);
+        this.x = 50;
+        this.y = 50;
         this.interactive = true;
         this.buttonMode = true;
 
-        this.on('click', () => {
-            this.clickEvent(app);
-        })
+        this.addChild(new Button('usual'), new Button('pressed'), new RunText('RUN'));
+        this.on('pointerdown', () => this.pointerdown(app))
+            .on('pointerup', () => this.pointerup(app))
     }
 
-    clickEvent(app) {
-        console.log(this);
-        this.beginFill(0xFF0000);
+    pointerdown(app) {
+        this.children[0].visible = false;
+        this.children[1].visible = true;
         app.render();
     }
 
+    pointerup(app) {
+        this.children[0].visible = true;
+        this.children[1].visible = false;
+        app.render();
+    }
+}
+
+class Button extends Graphics {
+    constructor(type) {
+        super();
+        if(type === 'usual') {
+            this.beginFill(0xFF0000, 0.5);
+            this.drawRoundedRect(0, 0, 100, 100, 10);
+            this.endFill();
+            this.visible = true;
+        } else if (type === 'pressed') {
+            this.beginFill(0xFF0000, 1);
+            this.drawRoundedRect(0, 0, 100, 100, 10);
+            this.endFill();
+            this.visible = false;
+        }
+    }
+}
+
+class RunText extends Text {
+    constructor(text) {
+        super(text);
+        this.x = 50;
+        this.y = 50;
+        this.anchor.set(0.5, 0.5);
+    }
 }
